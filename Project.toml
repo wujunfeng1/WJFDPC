@@ -1,0 +1,8 @@
+name = "WJFDPC"
+uuid = "c11ea89c-9772-4640-9ec1-7f02421ac3fd"
+authors = ["wujunfeng1 <59754256+wujunfeng1@users.noreply.github.com>"]
+version = "0.1.0"
+
+[deps]
+WJFKNN = "b432dcb5-e94d-4c0c-a8ef-d237aaab788a"
+WJFParallelTask = "e651f0bd-5ae6-4ed7-94b7-345472aabd1c"

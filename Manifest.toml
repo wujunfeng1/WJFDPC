@@ -1,0 +1,19 @@
+# This file is machine-generated - editing it directly is not advised
+
+julia_version = "1.7.0"
+manifest_format = "2.0"
+
+[[deps.WJFKNN]]
+deps = ["WJFParallelTask"]
+git-tree-sha1 = "cb33228a8ec472acca068aecee09ae844edf0a73"
+repo-rev = "master"
+repo-url = "https://github.com/wujunfeng1/WJFKNN"
+uuid = "b432dcb5-e94d-4c0c-a8ef-d237aaab788a"
+version = "0.1.3"
+
+[[deps.WJFParallelTask]]
+git-tree-sha1 = "008187ea6b5ca4ba74720fa72e2c92e280054a1e"
+repo-rev = "master"
+repo-url = "https://github.com/wujunfeng1/WJFParallelTask"
+uuid = "e651f0bd-5ae6-4ed7-94b7-345472aabd1c"
+version = "0.1.0"
