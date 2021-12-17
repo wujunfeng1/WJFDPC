@@ -26,7 +26,8 @@ function markClusterID!(
     end
 end
 
-function computeClusterIDs(m::UInt32, roots::Vector{DPCNode})::Vector{UInt32}
+function computeClusterIDs(m::UInt32, roots::Vector{DPCNode},
+    parallel::Bool)::Vector{UInt32}
     clusterIDs = Vector{UInt32}(undef, m)
     numRoots = length(roots)
     function mapFun(i1, i2)
@@ -34,7 +35,7 @@ function computeClusterIDs(m::UInt32, roots::Vector{DPCNode})::Vector{UInt32}
             markClusterID!(clusterIDs, i, roots[i])
         end
     end
-    mapOnly(1, numRoots, 1, mapFun)
+    mapOnly(1, numRoots, 1, mapFun, parallel)
     return clusterIDs
 end
 
@@ -52,6 +53,7 @@ end
 
 function getClusterDensityRanks(
     roots::Vector{DPCNode},
+    parallel::Bool,
 )::Vector{Vector{Tuple{Float64,UInt32}}}
     numRoots = length(roots)
     densityRanks = Vector{Vector{Tuple{Float64,UInt32}}}(undef, numRoots)
@@ -61,7 +63,7 @@ function getClusterDensityRanks(
             getClusterDensityRanks!(densityRanks[i], roots[i])
         end
     end
-    mapOnly(1, numRoots, 1, mapFun)
+    mapOnly(1, numRoots, 1, mapFun, parallel)
     return densityRanks
 end
 
@@ -76,6 +78,7 @@ function WjfDPC(
     distSqrFun::Function,
     k::UInt32,
     eps::Float64,
+    parallel::Bool,
 )::WjfDPC
     m = UInt32(length(data))
     densities = Vector{Float64}(undef, m)
@@ -92,7 +95,7 @@ function WjfDPC(
             densities[i] = exp(-sumDSqr / numPoints)
         end
     end
-    mapOnly(UInt32(1), m, UInt32(100), mapFun1)
+    mapOnly(UInt32(1), m, UInt32(100), mapFun1, parallel)
     nodes = [DPCNode(i, densities[i]) for i::UInt32 = 1:m]
 
     epsSqr = eps * eps
@@ -150,7 +153,8 @@ function WjfDPC(
         UInt32(100),
         mapFun2,
         reduceFun2,
-        Dict{UInt32,Vector{UInt32}}()
+        Dict{UInt32,Vector{UInt32}}(),
+        parallel,
     )
 
     preRoots = Vector{DPCNode}()
@@ -167,8 +171,8 @@ function WjfDPC(
             end
         end
     end
-    preClusterIDs = computeClusterIDs(m, preRoots)
-    clusterDensityRanks = getClusterDensityRanks(preRoots)
+    preClusterIDs = computeClusterIDs(m, preRoots, parallel)
+    clusterDensityRanks = getClusterDensityRanks(preRoots, parallel)
 
     function mapFun3(i1::UInt32, i2::UInt32)
         myResult = Dict{UInt32,Set{UInt32}}()
@@ -214,7 +218,9 @@ function WjfDPC(
         mapFun3,
         reduceFun3,
         Dict{UInt32,Set{UInt32}}(),
+        parallel,
     )
+    connectivities2ndLevel = Dict{UInt32,Set{UInt32}}()
 
     numPreRoots = UInt32(length(preRoots))
     function mapFun4(i1::UInt32, i2::UInt32)::Dict{UInt32,Vector{UInt32}}
@@ -265,6 +271,7 @@ function WjfDPC(
         mapFun4,
         reduceFun2,
         Dict{UInt32,Vector{UInt32}}(),
+        parallel,
     )
     roots = Vector{DPCNode}()
     for i::UInt32 = 1:numPreRoots
@@ -278,7 +285,7 @@ function WjfDPC(
             push!(nodes[i].children, nodes[j])
         end
     end
-    clusterIDs = computeClusterIDs(m, roots)
+    clusterIDs = computeClusterIDs(m, roots, parallel)
     return WjfDPC(roots, clusterIDs)
 end
 
