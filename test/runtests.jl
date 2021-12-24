@@ -9,7 +9,7 @@ function distSqrFun(a::NTuple{2,Float64}, b::NTuple{2,Float64})::Float64
     return sum((a .- b).^2)
 end
 #include("../src/WJFDPC.jl")
-@time dpc = WJFDPC.WjfDPC(x, cards, distSqrFun, UInt32(10), 5.0, true)
+@time dpc = WJFDPC.WjfDPC(x, cards, distSqrFun, UInt32(10), 5.0)
 clusterIDs = dpc.clusterIDs
 x1 = [x[i][1] for i in 1:length(x)]
 x2 = [x[i][2] for i in 1:length(x)]

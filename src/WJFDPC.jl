@@ -78,7 +78,7 @@ function WjfDPC(
     distSqrFun::Function,
     k::UInt32,
     eps::Float64,
-    parallel::Bool,
+    parallel::Bool = true,
 )::WjfDPC
     m = UInt32(length(data))
     densities = Vector{Float64}(undef, m)
